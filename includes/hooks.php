@@ -21,3 +21,11 @@ add_action(
 		load_plugin_textdomain( 'abandoned-cart-recovery-for-woocommerce-pro', false, dirname( ACRFWP_PLUGIN_BASENAME ) . '/languages' );
 	}
 );
+
+/**
+ * Tell the free plugin Pro is active (window.ACRFW.is_pro in its admin app).
+ *
+ * Answers with acrfwp_is_active(), not a plain true: this file loads before
+ * Pro checks the free plugin, so is_pro is only true once Pro has started.
+ */
+add_filter( 'acrfw_is_pro', 'acrfwp_is_active' );

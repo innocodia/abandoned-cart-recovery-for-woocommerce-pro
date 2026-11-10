@@ -41,7 +41,6 @@ class FollowupStats {
 	public static function init(): void {
 		$self = new self();
 		add_filter( 'acrfw_followup_stats', array( $self, 'stats' ), 10, 3 );
-		add_filter( 'acrfw_is_pro', '__return_true' );
 	}
 
 	/**
