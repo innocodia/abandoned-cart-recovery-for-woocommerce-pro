@@ -112,6 +112,7 @@ final class ACRFWP {
 	 */
 	public function dispatch_hooks(): void {
 		ACRFWP\Installer::check_update();
+		ACRFWP\App::init();
 		ACRFWP\API::init();
 		ACRFWP\Frontend::init();
 

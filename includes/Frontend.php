@@ -7,8 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Frontend module — dispatches the Pro classes that hook into the storefront
- * and into the free plugin's actions and filters (e.g. acrfw_followup_channels,
- * acrfw_followup_send for SMS / WhatsApp delivery).
+ * (checkout, cart, customer-facing pages). Services that only answer the free
+ * plugin's filters go in App/ instead.
  *
  * Each sub-class lives in includes/Frontend/ and wires its own hooks in a
  * static init().

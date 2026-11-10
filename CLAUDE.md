@@ -30,8 +30,12 @@ Same pattern as the free plugin (read its CLAUDE.md):
   It starts on the free plugin's `acrfw_init` action, so every free class, table
   and hook already exists. If the free plugin is missing or older than
   `ACRFWP::MIN_FREE_VERSION`, Pro does nothing and shows an admin notice.
-- `dispatch_hooks()` is the single list of top-level modules: `Installer`, `API`,
-  `Frontend`, `Admin` (admin only). Each is a thin dispatcher with a static
+- `dispatch_hooks()` is the single list of top-level modules: `Installer`, `App`,
+  `API`, `Frontend`, `Admin` (admin only).
+  - `App/`: services that plug into the free plugin's actions/filters
+    (e.g. `App\Stats\FollowupStats` answers `acrfw_followup_stats`).
+  - `API/`: REST controllers only (extend `WP_REST_Controller`, register routes).
+  - `Frontend/`: storefront hooks. `Admin/`: wp-admin only. Each is a thin dispatcher with a static
   `init()`. To add a capability, create a class under `includes/<Module>/` with
   its own static `init()` and register it in that module's dispatcher.
 - Autoload: `ACRFWP\` → `includes/` (Composer PSR-4). `includes/functions.php`
@@ -50,6 +54,12 @@ Pro features plug into the free plugin through its hooks rather than editing it:
   (`acrfw_table( 'followup_messages' )`).
 - REST routes: use the free plugin's namespace (`ACRFW\API::NAMESPACE_NAME` /
   `VERSION`) so the admin app talks to one API.
+
+## Performance rule
+
+Never load every order or every message into PHP for a number: sum or count in
+SQL (see `FollowupStats::revenue()`, which reads HPOS tables or posts directly).
+`wc_get_orders( 'limit' => -1 )` on an unbounded set is a bug.
 
 ## Conventions
 
