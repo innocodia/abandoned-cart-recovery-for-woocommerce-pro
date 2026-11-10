@@ -1,0 +1,26 @@
+{
+  "name": "innocodia/abandoned-cart-recovery-for-woocommerce-pro",
+  "description": "Better Recovery Pro - Abandoned Cart Recovery for WooCommerce",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "ACRFWP\\": "includes/"
+    }
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.9",
+    "wp-coding-standards/wpcs": "^3.1",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "lint": "phpcs",
+    "lint:fix": "phpcbf"
+  }
+}

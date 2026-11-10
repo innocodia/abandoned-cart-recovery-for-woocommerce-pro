@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<ruleset name="Better Recovery Pro - Abandoned Cart Recovery for WooCommerce">
+	<description>WordPress Coding Standards ruleset for ACRFWP.</description>
+	<file>.</file>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*.js</exclude-pattern>
+	<exclude-pattern>*.css</exclude-pattern>
+	<arg value="sp"/>
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+	<!-- Show sniff codes in all reports -->
+	<arg value="ns"/>
+	<config name="minimum_supported_wp_version" value="6.4"/>
+	<config name="testVersion" value="7.4-"/>
+	<rule ref="WordPress-Extra">
+		<!-- File names are PSR-4 (StudlyCaps, one class per file) via Composer, not WP's file-name-includes-class-name convention. -->
+		<exclude name="WordPress.Files.FileName"/>
+	</rule>
+	<!-- The plugin bootstrap file intentionally pairs the ACRFWP class with a single
+	     acrfwp() accessor function, per the standard WP plugin main-file convention. -->
+	<rule ref="Universal.Files.SeparateFunctionsFromOO.Mixed">
+		<exclude-pattern>abandoned-cart-recovery-for-woocommerce-pro.php</exclude-pattern>
+	</rule>
+	<rule ref="PHPCompatibilityWP"/>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="abandoned-cart-recovery-for-woocommerce-pro"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="acrfwp"/>
+				<element value="ACRFWP"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.Security.EscapeOutput">
+		<properties>
+			<property name="customAutoEscapedFunctions" type="array">
+				<element value="acrfw_setting"/>
+			</property>
+		</properties>
+	</rule>
+	<!-- Namespaced classes (ACRFWP\Foo\Bar) are not literal globals; this project relies on
+	     PSR-4 autoloading + namespaces for collision-safety instead of class-name prefixing. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound">
+		<severity>0</severity>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedInterfaceFound">
+		<severity>0</severity>
+	</rule>
+</ruleset>
