@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * - App\Stats\FollowupStats answers `acrfw_followup_stats`.
  * - App\Conditions\Conditions answers `acrfw_validate_conditions` and
  *   `acrfw_conditions_match`.
+ * - App\Blacklist\Blacklist answers `acrfw_is_blacklisted`.
  *
  * Each service lives under includes/App/<Area>/ and wires its own hooks in a
  * static init(). REST controllers go in API/, storefront hooks in Frontend/.
@@ -20,5 +21,6 @@ class App {
 	public static function init(): void {
 		App\Stats\FollowupStats::init();
 		App\Conditions\Conditions::init();
+		App\Blacklist\Blacklist::init();
 	}
 }
