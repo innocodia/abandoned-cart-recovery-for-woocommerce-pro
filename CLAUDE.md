@@ -33,7 +33,10 @@ Same pattern as the free plugin (read its CLAUDE.md):
 - `dispatch_hooks()` is the single list of top-level modules: `Installer`, `App`,
   `API`, `Frontend`, `Admin` (admin only).
   - `App/`: services that plug into the free plugin's actions/filters
-    (e.g. `App\Stats\FollowupStats` answers `acrfw_followup_stats`).
+    (`App\Stats\FollowupStats` answers `acrfw_followup_stats`;
+    `App\Conditions\Conditions` answers `acrfw_validate_conditions` and
+    `acrfw_conditions_match`; the field list stays in the free plugin's
+    `App\Followups\ConditionFields`).
   - `API/`: REST controllers only (extend `WP_REST_Controller`, register routes).
   - `Frontend/`: storefront hooks. `Admin/`: wp-admin only. Each is a thin dispatcher with a static
   `init()`. To add a capability, create a class under `includes/<Module>/` with
