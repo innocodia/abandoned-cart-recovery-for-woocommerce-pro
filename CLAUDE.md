@@ -49,6 +49,10 @@ Same pattern as the free plugin (read its CLAUDE.md):
 - `Installer::check_update()` runs per load; upgrade steps go in
   `maybe_run_migrations()` (or hook `acrfwp_migrate`).
 
+## Uninstall
+
+`uninstall.php` deletes Pro's own `acrfwp_*` options when the free plugin's Danger Zone switch (`advanced.delete_plugin_data`) is on, or when the free settings are already gone. All other data (settings, tables) belongs to the free plugin and is removed by its uninstaller. If Pro ever stores its own data, add it here.
+
 ## Extending the free plugin
 
 Pro features plug into the free plugin through its hooks rather than editing it:
