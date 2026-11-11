@@ -37,7 +37,9 @@ Same pattern as the free plugin (read its CLAUDE.md):
     `App\Conditions\Conditions` answers `acrfw_validate_conditions` and
     `acrfw_conditions_match`; the field list stays in the free plugin's
     `App\Followups\ConditionFields`; `App\Blacklist\Blacklist` answers
-    `acrfw_is_blacklisted` from the free plugin's `blacklist.*` settings).
+    `acrfw_is_blacklisted` from the free plugin's `blacklist.*` settings;
+    `App\Gdpr\PhoneConsent` adds the phone notice to `acrfw_gdpr_notices` when
+    `gdpr.enable_phone_gdpr` is on — the free plugin renders it and handles the opt-out).
   - `API/`: REST controllers only (extend `WP_REST_Controller`, register routes).
   - `Frontend/`: storefront hooks. `Admin/`: wp-admin only. Each is a thin dispatcher with a static
   `init()`. To add a capability, create a class under `includes/<Module>/` with

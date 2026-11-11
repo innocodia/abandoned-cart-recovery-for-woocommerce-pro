@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * - App\Conditions\Conditions answers `acrfw_validate_conditions` and
  *   `acrfw_conditions_match`.
  * - App\Blacklist\Blacklist answers `acrfw_is_blacklisted`.
+ * - App\Gdpr\PhoneConsent adds the phone notice to `acrfw_gdpr_notices`.
  *
  * Each service lives under includes/App/<Area>/ and wires its own hooks in a
  * static init(). REST controllers go in API/, storefront hooks in Frontend/.
@@ -22,5 +23,6 @@ class App {
 		App\Stats\FollowupStats::init();
 		App\Conditions\Conditions::init();
 		App\Blacklist\Blacklist::init();
+		App\Gdpr\PhoneConsent::init();
 	}
 }
