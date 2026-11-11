@@ -22,6 +22,7 @@ class Blacklist {
 
 	public static function init(): void {
 		add_filter( 'acrfw_is_blacklisted', array( self::class, 'on_check' ), 10, 2 );
+		add_filter( 'acrfw_blacklist_entries', array( self::class, 'entries' ) );
 	}
 
 	/**
@@ -36,6 +37,20 @@ class Blacklist {
 		}
 
 		return self::contains( (string) ( is_object( $cart ) ? ( $cart->email ?? '' ) : '' ) );
+	}
+
+	/**
+	 * acrfw_blacklist_entries callback: the saved entries (emails and
+	 * "@domains"), or [] when the blacklist is switched off. Used by the free
+	 * plugin's Carts report (GET /carts?blacklisted=true and counts), which
+	 * matches them the same way as contains().
+	 */
+	public static function entries(): array {
+		if ( ! acrfw_setting( 'blacklist.enable_blacklist', false ) ) {
+			return array();
+		}
+
+		return array_values( array_filter( array_map( 'strtolower', (array) acrfw_setting( 'blacklist.emails', array() ) ) ) );
 	}
 
 	/**
