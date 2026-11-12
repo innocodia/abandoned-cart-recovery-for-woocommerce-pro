@@ -63,7 +63,11 @@ Same pattern as the free plugin (read its CLAUDE.md):
 
 ## Uninstall
 
-`uninstall.php` deletes Pro's own `acrfwp_*` options when the free plugin's Danger Zone switch (`advanced.delete_plugin_data`) is on, or when the free settings are already gone. All other data (settings, tables) belongs to the free plugin and is removed by its uninstaller. If Pro ever stores its own data, add it here.
+There is **no `uninstall.php`**: Freemius owns the uninstall hook, and its rules forbid the file. The cleanup lives in the bootstrap file:
+- `acrfwp_fs_uninstall_cleanup()` → `acrfwp_uninstall_site()` per site;
+- it's registered with `acrfwp_fs()->add_action( 'after_uninstall', … )`.
+
+It deletes Pro's own `acrfwp_*` options when the free plugin's Danger Zone switch (`advanced.delete_plugin_data`) is on, or when the free settings are already gone. All other data (settings, tables) belongs to the free plugin and is removed by its own uninstaller. If Pro ever stores its own data, add it there.
 
 ## Extending the free plugin
 

@@ -74,6 +74,59 @@ if ( ! function_exists( 'acrfwp_fs' ) ) {
 	acrfwp_fs();
 	// Signal that SDK was initiated.
 	do_action( 'acrfwp_fs_loaded' );
+
+	/*
+	 * Uninstall cleanup (Plugins → Delete). Freemius owns the plugin's
+	 * uninstall hook (it reports the uninstall), so there is no uninstall.php:
+	 * the cleanup runs on Freemius' after_uninstall action instead.
+	 */
+	acrfwp_fs()->add_action( 'after_uninstall', 'acrfwp_fs_uninstall_cleanup' );
+}
+
+if ( ! function_exists( 'acrfwp_fs_uninstall_cleanup' ) ) {
+	/**
+	 * After Pro is deleted: remove Pro's own acrfwp_* options on every site.
+	 *
+	 * Pro keeps its data in the free plugin (settings, tables), which removes it
+	 * through its own uninstall when Settings → Advanced → "Delete Plugin Data on
+	 * Uninstall" is on. Pro's options are removed when that switch is on, or when
+	 * the free plugin's settings are already gone (the free plugin was deleted
+	 * with its data first).
+	 */
+	function acrfwp_fs_uninstall_cleanup() {
+		if ( ! is_multisite() ) {
+			acrfwp_uninstall_site();
+			return;
+		}
+
+		foreach ( get_sites(
+			array(
+				'fields' => 'ids',
+				'number' => 0,
+			)
+		) as $acrfwp_site_id ) {
+			switch_to_blog( (int) $acrfwp_site_id );
+			acrfwp_uninstall_site();
+			restore_current_blog();
+		}
+	}
+}
+
+if ( ! function_exists( 'acrfwp_uninstall_site' ) ) {
+	/** Remove Pro's options on the current site when the free plugin's switch allows it. */
+	function acrfwp_uninstall_site() {
+		global $wpdb;
+
+		$settings = get_option( 'acrfw_settings', null );
+		$delete   = null === $settings || ( is_array( $settings ) && ! empty( $settings['advanced']['delete_plugin_data'] ) );
+		if ( ! $delete ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- uninstall.
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE option_name LIKE %s', $wpdb->options, 'acrfwp\_%' ) );
+		wp_cache_flush();
+	}
 }
 
 /**
