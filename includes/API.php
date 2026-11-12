@@ -19,6 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class API {
 
 	public static function init(): void {
-		// e.g. API\YourClass::init();
+		API\ProductsReport::init(); // GET /reports/products (+ /export).
 	}
 }

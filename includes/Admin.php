@@ -18,6 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Admin {
 
 	public static function init(): void {
-		// e.g. Admin\YourClass::init();
+		Admin\License::init(); // Better Recovery → License (Freemius).
 	}
 }
