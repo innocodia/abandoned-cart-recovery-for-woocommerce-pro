@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Better Recovery Pro - Abandoned Cart Recovery for WooCommerce
  * Plugin URI:        https://innocodia.com/abandoned-cart-recovery-for-woocommerce
- * Description:       Pro add-on for Better Recovery: SMS and WhatsApp follow-ups, follow-up stats and more.
+ * Description:       Pro add-on for Better Recovery: follow-up stats, smart conditions, blacklist, products report and more.
  * Version:           1.0.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
@@ -14,7 +14,7 @@
  * Domain Path:       /languages/
  * Requires Plugins:  woocommerce, abandoned-cart-recovery-for-woocommerce
  * WC requires at least: 8.0
- * WC tested up to:   9.0
+ * WC tested up to:   10.9
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
