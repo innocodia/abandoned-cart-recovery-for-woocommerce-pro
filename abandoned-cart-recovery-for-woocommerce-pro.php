@@ -21,6 +21,61 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/*
+ * Licensing (Freemius). The SDK lives in license/ (a copy of the Freemius
+ * WordPress SDK, the same layout as the Better Badge Pro plugin). The
+ * "License" submenu under Better Recovery is added by ACRFWP\Admin\License and
+ * opens the Freemius account / activation page (slug acrfw-license).
+ */
+if ( ! function_exists( 'acrfwp_fs' ) ) {
+	/**
+	 * Freemius SDK instance for Better Recovery Pro.
+	 *
+	 * @return Freemius
+	 */
+	function acrfwp_fs() {
+		global $acrfwp_fs;
+
+		if ( ! isset( $acrfwp_fs ) ) {
+			// Include Freemius SDK.
+			require_once __DIR__ . '/license/start.php';
+
+			$acrfwp_fs = fs_dynamic_init(
+				array(
+					'id'                  => '44750',
+					'slug'                => 'abandoned-cart-recovery-for-woocommerce-pro',
+					'type'                => 'plugin',
+					'public_key'          => 'pk_9405728081a895c403d8e3af1baa2',
+					'is_premium'          => true,
+					'premium_suffix'      => 'Pro',
+					// If your plugin is a serviceware, set this option to false.
+					'has_premium_version' => true,
+					'has_addons'          => false,
+					'has_paid_plans'      => true,
+					'is_org_compliant'    => true,
+					// Automatically removed in the free version. If you're not using the
+					// auto-generated free version, delete this line before uploading to wp.org.
+					'wp_org_gatekeeper'   => 'OA7#BoRiBNqdf52FvzEf!!074aRLPs8fspif$7K1#4u4Csys1fQlCecVcUTOs2mcpeVHi#C2j9d09fOTvbC0HloPT7fFee5WdS3G',
+					'menu'                => array(
+						'slug'    => 'acrfw-license',
+						'support' => false,
+						'parent'  => array(
+							'slug' => 'acrfw',
+						),
+					),
+				)
+			);
+		}
+
+		return $acrfwp_fs;
+	}
+
+	// Init Freemius.
+	acrfwp_fs();
+	// Signal that SDK was initiated.
+	do_action( 'acrfwp_fs_loaded' );
+}
+
 /**
  * The Pro plugin main class.
  *

@@ -49,6 +49,18 @@ Same pattern as the free plugin (read its CLAUDE.md):
 - `Installer::check_update()` runs per load; upgrade steps go in
   `maybe_run_migrations()` (or hook `acrfwp_migrate`).
 
+## Licensing (Freemius)
+
+- **SDK:** the Freemius WordPress SDK (2.10.1) lives in **`license/`** (copied as-is, the same layout as Better Badge Pro). Lint excludes it; the build ships it.
+- **Init:** `acrfwp_fs()` is defined and called at the top of the bootstrap file, before anything else:
+  - product id 44750, slug `abandoned-cart-recovery-for-woocommerce-pro`;
+  - menu slug `acrfw-license` under the free plugin's `acrfw` menu.
+- **License submenu:** `ACRFWP\Admin\License` adds Better Recovery → **License** (`admin.php?page=acrfw-license`).
+  - Not activated: Freemius shows its activation screen there (license key).
+  - Activated: `load-{hook}` redirects to the Freemius account page `acrfw-license-account`.
+- **Free plugin menu script:** `acrfw-admin-menu.js` only intercepts SPA links (`page=acrfw` exactly), so the License link opens normally.
+- **License check:** `acrfwp_fs()->is_registered() && acrfwp_fs()->has_active_valid_license()`. Pro features are **not** gated by it yet.
+
 ## Uninstall
 
 `uninstall.php` deletes Pro's own `acrfwp_*` options when the free plugin's Danger Zone switch (`advanced.delete_plugin_data`) is on, or when the free settings are already gone. All other data (settings, tables) belongs to the free plugin and is removed by its uninstaller. If Pro ever stores its own data, add it here.

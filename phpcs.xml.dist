@@ -3,6 +3,8 @@
 	<description>WordPress Coding Standards ruleset for ACRFWP.</description>
 	<file>.</file>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<!-- Freemius WordPress SDK (third-party, copied as-is). -->
+	<exclude-pattern>*/license/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/build/*</exclude-pattern>
 	<exclude-pattern>*.js</exclude-pattern>
