@@ -24,6 +24,7 @@
     "package-lock.json",
     "phpcs.xml.dist",
     "CLAUDE.md",
+    "**/*.md",
     ".claude"
   ],
   "devDependencies": {
