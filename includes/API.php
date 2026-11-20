@@ -20,5 +20,7 @@ class API {
 
 	public static function init(): void {
 		API\ProductsReport::init(); // GET /reports/products (+ /export).
+		API\WhatsApp::init();       // /integrations/whatsapp (settings, verify, templates, opt-outs).
+		API\WhatsAppWebhook::init(); // /whatsapp/webhook (Meta: handshake, statuses, STOP).
 	}
 }

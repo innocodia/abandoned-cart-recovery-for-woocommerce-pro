@@ -24,6 +24,8 @@ Requires WooCommerce and the free Better Recovery plugin (both active).
 * **Blacklist** – never send follow-ups to listed email addresses or whole domains (e.g. `@competitor.com`).
 * **Products report** – see which products are abandoned and recovered most: times abandoned, amount abandoned, times recovered, amount recovered and recovery rate, with search, sorting, date range and CSV export.
 * **Blacklisted carts** – a "Blacklisted" filter and count in the Carts report.
+* **WhatsApp reminders** – send follow-up steps on WhatsApp through your own Meta WhatsApp Business account (Cloud API): pick an approved template, fill it with the customer's name, cart, coupon and a one-tap recovery link, and see delivered, read, clicked and recovered for each message. Customers who reply STOP are never messaged again. Meta charges for marketing messages.
+* **WhatsApp opt-in** – an optional checkbox under the checkout phone field (classic and block checkout); WhatsApp reminders then go only to customers who ticked it.
 * **Phone GDPR consent** – a consent notice with your own message and a "No thanks" link under the checkout phone field (classic and block checkout). Customers who opt out never have their phone number saved.
 * **License & updates** – activate your license under Better Recovery → License for automatic updates.
 
@@ -41,9 +43,17 @@ No. Pro is an add-on: it needs WooCommerce and the free Better Recovery plugin t
 
 = What happens to my settings if Pro is deactivated? =
 
-Your settings and data are kept. Pro-only features stop until Pro is active again: steps with conditions are paused (never sent to everyone), and the blacklist and phone consent notice are no longer applied.
+Your settings and data are kept. Pro-only features stop until Pro is active again: steps with conditions are paused (never sent to everyone), WhatsApp steps are skipped, and the blacklist, phone consent notice and WhatsApp opt-in are no longer applied.
+
+= What do I need for WhatsApp reminders? =
+
+A Meta WhatsApp Business account with the Cloud API, a phone number added to it, a permanent access token, and at least one approved message template. Enter them under Better Recovery → Integrations → WhatsApp, then paste the webhook URL shown there into your Meta app so delivery reports and STOP replies reach your store.
 
 == Changelog ==
+
+= Unreleased =
+* New: WhatsApp reminders through Meta's WhatsApp Cloud API: connection settings with verification, approved-template picker, merge tags in template slots and the link button, delivered / read / failed status, and a STOP list.
+* New: Optional WhatsApp opt-in checkbox at checkout (classic and block checkout).
 
 = 1.0.0 – 2026-11-13 =
 * New: Initial release.

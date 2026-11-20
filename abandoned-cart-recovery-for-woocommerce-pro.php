@@ -85,13 +85,15 @@ if ( ! function_exists( 'acrfwp_fs' ) ) {
 
 if ( ! function_exists( 'acrfwp_fs_uninstall_cleanup' ) ) {
 	/**
-	 * After Pro is deleted: remove Pro's own acrfwp_* options on every site.
+	 * After Pro is deleted: remove Pro's own data on every site — acrfwp_*
+	 * options (WhatsApp connection included) and transients, and the
+	 * acrfwp_phone_optouts table.
 	 *
-	 * Pro keeps its data in the free plugin (settings, tables), which removes it
-	 * through its own uninstall when Settings → Advanced → "Delete Plugin Data on
-	 * Uninstall" is on. Pro's options are removed when that switch is on, or when
-	 * the free plugin's settings are already gone (the free plugin was deleted
-	 * with its data first).
+	 * Pro keeps most of its data in the free plugin (settings, tables), which
+	 * removes it through its own uninstall when Settings → Advanced → "Delete
+	 * Plugin Data on Uninstall" is on. Pro's own data is removed when that
+	 * switch is on, or when the free plugin's settings are already gone (the
+	 * free plugin was deleted with its data first).
 	 */
 	function acrfwp_fs_uninstall_cleanup() {
 		if ( ! is_multisite() ) {
@@ -123,8 +125,18 @@ if ( ! function_exists( 'acrfwp_uninstall_site' ) ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- uninstall.
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE option_name LIKE %s', $wpdb->options, 'acrfwp\_%' ) );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- uninstall removes Pro's own data.
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s',
+				$wpdb->options,
+				'acrfwp\_%',
+				'\_transient\_acrfwp\_%',
+				'\_transient\_timeout\_acrfwp\_%'
+			)
+		);
+		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . 'acrfwp_phone_optouts' ) );
+		// phpcs:enable
 		wp_cache_flush();
 	}
 }

@@ -40,6 +40,22 @@ Same pattern as the free plugin (read its CLAUDE.md):
     `acrfw_is_blacklisted` from the free plugin's `blacklist.*` settings;
     `App\Gdpr\PhoneConsent` adds the phone notice to `acrfw_gdpr_notices` when
     `gdpr.enable_phone_gdpr` is on — the free plugin renders it and handles the opt-out).
+  - `App/WhatsApp/`: WhatsApp follow-ups through Meta's Cloud API (plan: the free plugin's
+    `docs/plans/whatsapp-pro.md`).
+    - `WhatsAppChannel` marks the channel available (`acrfw_followup_channels`) and sends
+      approved templates (`acrfw_followup_send`). It returns `{ sent, skipped, reason, provider_message_id }`.
+    - Connection (`Settings`): the `acrfwp_whatsapp` option. The token and app secret are
+      encrypted with sodium, keyed from the AUTH salt, and never returned by the API.
+    - `Client` is the Graph API wrapper; bump `GRAPH_VERSION` when Meta deprecates it.
+    - `Templates` holds the approved list (1 h transient `acrfwp_wa_templates`).
+    - `PhoneNumber` does E.164 formatting with WooCommerce calling codes.
+    - `OptOuts` is the STOP list, table `acrfwp_phone_optouts`.
+    - `Webhook` handles Meta's statuses (delivered / read = opened / failed) and STOP replies,
+      checked with an HMAC of the app secret.
+    - `CheckoutOptin` adds the checkout box to the free `acrfw_checkout_optins` when
+      `gdpr.enable_whatsapp_optin` is on.
+    - Routes: `API\WhatsApp` (`/integrations/whatsapp/*`) and `API\WhatsAppWebhook`
+      (`/whatsapp/webhook`, public).
   - `API/`: REST controllers only (extend `WP_REST_Controller`, register routes). `API\ProductsReport` serves `GET /reports/products` and `/reports/products/export` (CSV, sent raw through `rest_pre_serve_request`) from `App\Reports\ProductsReport`, which groups the free plugin's `acrfw_cart_items` in SQL.
   - `Frontend/`: storefront hooks. `Admin/`: wp-admin only. Each is a thin dispatcher with a static
   `init()`. To add a capability, create a class under `includes/<Module>/` with
@@ -47,7 +63,9 @@ Same pattern as the free plugin (read its CLAUDE.md):
 - Autoload: `ACRFWP\` → `includes/` (Composer PSR-4). `includes/functions.php`
   holds global helpers (prefix `acrfwp_`), `includes/hooks.php` truly global hooks.
 - `Installer::check_update()` runs per load; upgrade steps go in
-  `maybe_run_migrations()` (or hook `acrfwp_migrate`).
+  `maybe_run_migrations()` (or hook `acrfwp_migrate`). Pro's own tables are created in
+  `maybe_create_tables()`, gated by `Installer::DB_VERSION`: bump it when you add or
+  change a table, and drop the table in `acrfwp_uninstall_site()`.
 
 ## Licensing (Freemius)
 

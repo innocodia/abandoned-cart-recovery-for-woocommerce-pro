@@ -13,6 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  *   `acrfw_conditions_match`.
  * - App\Blacklist\Blacklist answers `acrfw_is_blacklisted`.
  * - App\Gdpr\PhoneConsent adds the phone notice to `acrfw_gdpr_notices`.
+ * - App\WhatsApp\WhatsAppChannel makes WhatsApp available and sends it
+ *   (`acrfw_followup_channels`, `acrfw_followup_send`).
+ * - App\WhatsApp\CheckoutOptin adds the WhatsApp opt-in checkbox to
+ *   `acrfw_checkout_optins`.
  *
  * Each service lives under includes/App/<Area>/ and wires its own hooks in a
  * static init(). REST controllers go in API/, storefront hooks in Frontend/.
@@ -24,5 +28,7 @@ class App {
 		App\Conditions\Conditions::init();
 		App\Blacklist\Blacklist::init();
 		App\Gdpr\PhoneConsent::init();
+		App\WhatsApp\WhatsAppChannel::init();
+		App\WhatsApp\CheckoutOptin::init();
 	}
 }
