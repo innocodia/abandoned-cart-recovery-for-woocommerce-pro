@@ -10,8 +10,8 @@ use WP_REST_Controller;
 use WP_REST_Request;
 use WP_REST_Server;
 use ACRFWP\App\WhatsApp\Client;
-use ACRFWP\App\WhatsApp\OptOuts;
-use ACRFWP\App\WhatsApp\PhoneNumber;
+use ACRFWP\App\Messaging\OptOuts;
+use ACRFWP\App\Messaging\PhoneNumber;
 use ACRFWP\App\WhatsApp\Settings;
 use ACRFWP\App\WhatsApp\Templates;
 
@@ -243,7 +243,7 @@ class WhatsApp extends WP_REST_Controller {
 	public function optouts( $request ) {
 		$page     = (int) $request->get_param( 'page' );
 		$per_page = (int) $request->get_param( 'per_page' );
-		$result   = OptOuts::page( (string) $request->get_param( 'search' ), $page, $per_page );
+		$result   = OptOuts::page( (string) $request->get_param( 'search' ), $page, $per_page, 'whatsapp' );
 
 		$response = rest_ensure_response( $result );
 		$response->header( 'X-WP-Total', (string) $result['total'] );
@@ -268,7 +268,7 @@ class WhatsApp extends WP_REST_Controller {
 			);
 		}
 
-		$added = OptOuts::add( $phone, 'admin' );
+		$added = OptOuts::add( $phone, 'admin', 'whatsapp' );
 
 		return rest_ensure_response(
 			array(
@@ -283,7 +283,7 @@ class WhatsApp extends WP_REST_Controller {
 	 */
 	public function delete_optout( $request ) {
 		$id  = (int) $request['id'];
-		$row = OptOuts::get( $id );
+		$row = OptOuts::get( $id, 'whatsapp' );
 		if ( ! $row ) {
 			return new WP_Error( 'rest_not_found', __( 'Opt-out not found.', 'abandoned-cart-recovery-for-woocommerce-pro' ), array( 'status' => 404 ) );
 		}

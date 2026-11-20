@@ -40,22 +40,29 @@ Same pattern as the free plugin (read its CLAUDE.md):
     `acrfw_is_blacklisted` from the free plugin's `blacklist.*` settings;
     `App\Gdpr\PhoneConsent` adds the phone notice to `acrfw_gdpr_notices` when
     `gdpr.enable_phone_gdpr` is on — the free plugin renders it and handles the opt-out).
+  - `App/Messaging/`: shared by WhatsApp and SMS.
+    - `PhoneNumber` does E.164 formatting with WooCommerce calling codes.
+    - `OptOuts` is the per-channel STOP list (table `acrfwp_phone_optouts`; every call takes the channel).
+    - `Secrets` encrypts provider secrets with sodium, keyed from the AUTH salt; the key derivation must not change.
+    - `CheckoutOptin` adds the WhatsApp / SMS boxes to the free `acrfw_checkout_optins` when
+      `gdpr.enable_{channel}_optin` is on.
   - `App/WhatsApp/`: WhatsApp follow-ups through Meta's Cloud API (plan: the free plugin's
     `docs/plans/whatsapp-pro.md`).
-    - `WhatsAppChannel` marks the channel available (`acrfw_followup_channels`) and sends
-      approved templates (`acrfw_followup_send`). It returns `{ sent, skipped, reason, provider_message_id }`.
-    - Connection (`Settings`): the `acrfwp_whatsapp` option. The token and app secret are
-      encrypted with sodium, keyed from the AUTH salt, and never returned by the API.
+    - `WhatsAppChannel` marks the channel available and sends approved templates.
+    - The connection is the `acrfwp_whatsapp` option (`Settings`).
     - `Client` is the Graph API wrapper; bump `GRAPH_VERSION` when Meta deprecates it.
-    - `Templates` holds the approved list (1 h transient `acrfwp_wa_templates`).
-    - `PhoneNumber` does E.164 formatting with WooCommerce calling codes.
-    - `OptOuts` is the STOP list, table `acrfwp_phone_optouts`.
-    - `Webhook` handles Meta's statuses (delivered / read = opened / failed) and STOP replies,
-      checked with an HMAC of the app secret.
-    - `CheckoutOptin` adds the checkout box to the free `acrfw_checkout_optins` when
-      `gdpr.enable_whatsapp_optin` is on.
-    - Routes: `API\WhatsApp` (`/integrations/whatsapp/*`) and `API\WhatsAppWebhook`
-      (`/whatsapp/webhook`, public).
+    - `Templates` holds the approved list (1 h transient).
+    - `Webhook` handles delivered / read (= opened) / failed and STOP replies, checked with an HMAC of the app secret.
+    - Routes: `API\WhatsApp` (`/integrations/whatsapp/*`) and `API\WhatsAppWebhook` (`/whatsapp/webhook`).
+  - `App/Sms/`: SMS follow-ups (plan: `docs/plans/sms-pro.md` in the free plugin).
+    - `SmsChannel` sends through `Settings::provider()`, a `Providers\SmsProvider`. Only `Twilio` exists;
+      a new provider is one class plus a `Settings::PROVIDERS` entry.
+    - It adds the opt-out line.
+    - The connection is the `acrfwp_sms` option.
+    - `Webhook` handles status (delivered / failed) and inbound STOP / START.
+    - Routes: `API\Sms` (`/integrations/sms/*`) and `API\SmsWebhook`
+      (`/sms/webhook/twilio/{status,inbound}`, Twilio-signed).
+    - Both channels return `{ sent, skipped, reason, provider_message_id }` from `acrfw_followup_send`.
   - `API/`: REST controllers only (extend `WP_REST_Controller`, register routes). `API\ProductsReport` serves `GET /reports/products` and `/reports/products/export` (CSV, sent raw through `rest_pre_serve_request`) from `App\Reports\ProductsReport`, which groups the free plugin's `acrfw_cart_items` in SQL.
   - `Frontend/`: storefront hooks. `Admin/`: wp-admin only. Each is a thin dispatcher with a static
   `init()`. To add a capability, create a class under `includes/<Module>/` with

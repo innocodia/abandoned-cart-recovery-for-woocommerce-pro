@@ -25,7 +25,8 @@ Requires WooCommerce and the free Better Recovery plugin (both active).
 * **Products report** – see which products are abandoned and recovered most: times abandoned, amount abandoned, times recovered, amount recovered and recovery rate, with search, sorting, date range and CSV export.
 * **Blacklisted carts** – a "Blacklisted" filter and count in the Carts report.
 * **WhatsApp reminders** – send follow-up steps on WhatsApp through your own Meta WhatsApp Business account (Cloud API): pick an approved template, fill it with the customer's name, cart, coupon and a one-tap recovery link, and see delivered, read, clicked and recovered for each message. Customers who reply STOP are never messaged again. Meta charges for marketing messages.
-* **WhatsApp opt-in** – an optional checkbox under the checkout phone field (classic and block checkout); WhatsApp reminders then go only to customers who ticked it.
+* **SMS reminders** – send follow-up steps by text message through your own Twilio account, with short recovery links that keep a reminder to one SMS, an automatic "Reply STOP to opt out" line, delivery reports and STOP / START handling.
+* **WhatsApp and SMS opt-in** – optional checkboxes under the checkout phone field (classic and block checkout); each channel then goes only to customers who ticked its box.
 * **Phone GDPR consent** – a consent notice with your own message and a "No thanks" link under the checkout phone field (classic and block checkout). Customers who opt out never have their phone number saved.
 * **License & updates** – activate your license under Better Recovery → License for automatic updates.
 
@@ -43,17 +44,22 @@ No. Pro is an add-on: it needs WooCommerce and the free Better Recovery plugin t
 
 = What happens to my settings if Pro is deactivated? =
 
-Your settings and data are kept. Pro-only features stop until Pro is active again: steps with conditions are paused (never sent to everyone), WhatsApp steps are skipped, and the blacklist, phone consent notice and WhatsApp opt-in are no longer applied.
+Your settings and data are kept. Pro-only features stop until Pro is active again: steps with conditions are paused (never sent to everyone), WhatsApp and SMS steps are skipped, and the blacklist, phone consent notice and opt-in checkboxes are no longer applied.
 
 = What do I need for WhatsApp reminders? =
 
 A Meta WhatsApp Business account with the Cloud API, a phone number added to it, a permanent access token, and at least one approved message template. Enter them under Better Recovery → Integrations → WhatsApp, then paste the webhook URL shown there into your Meta app so delivery reports and STOP replies reach your store.
 
+= What do I need for SMS reminders? =
+
+A Twilio account with an SMS-capable phone number (or an approved sender name or Messaging Service). Enter the Account SID, Auth Token and sender under Better Recovery → Integrations → SMS, then paste the inbound URL shown there into your Twilio number's messaging settings so STOP replies reach your store. Sending to US numbers requires A2P 10DLC registration with Twilio. Twilio charges per SMS part.
+
 == Changelog ==
 
 = Unreleased =
 * New: WhatsApp reminders through Meta's WhatsApp Cloud API: connection settings with verification, approved-template picker, merge tags in template slots and the link button, delivered / read / failed status, and a STOP list.
-* New: Optional WhatsApp opt-in checkbox at checkout (classic and block checkout).
+* New: SMS reminders through Twilio: connection settings with verification, short recovery links, an automatic opt-out line, delivery reports, and STOP / START handling.
+* New: Optional WhatsApp and SMS opt-in checkboxes at checkout (classic and block checkout).
 
 = 1.0.0 – 2026-11-13 =
 * New: Initial release.

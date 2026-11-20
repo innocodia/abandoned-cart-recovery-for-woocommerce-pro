@@ -15,7 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * - App\Gdpr\PhoneConsent adds the phone notice to `acrfw_gdpr_notices`.
  * - App\WhatsApp\WhatsAppChannel makes WhatsApp available and sends it
  *   (`acrfw_followup_channels`, `acrfw_followup_send`).
- * - App\WhatsApp\CheckoutOptin adds the WhatsApp opt-in checkbox to
+ * - App\Sms\SmsChannel makes SMS available and sends it through the
+ *   provider (Twilio).
+ * - App\Messaging\CheckoutOptin adds the WhatsApp / SMS opt-in checkboxes to
  *   `acrfw_checkout_optins`.
  *
  * Each service lives under includes/App/<Area>/ and wires its own hooks in a
@@ -29,6 +31,7 @@ class App {
 		App\Blacklist\Blacklist::init();
 		App\Gdpr\PhoneConsent::init();
 		App\WhatsApp\WhatsAppChannel::init();
-		App\WhatsApp\CheckoutOptin::init();
+		App\Sms\SmsChannel::init();
+		App\Messaging\CheckoutOptin::init();
 	}
 }

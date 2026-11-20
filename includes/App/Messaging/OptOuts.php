@@ -1,25 +1,27 @@
 <?php
-namespace ACRFWP\App\WhatsApp;
+namespace ACRFWP\App\Messaging;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Phone numbers that must not get WhatsApp reminders: the customer replied
- * with an opt-out keyword (STOP…), or an admin added the number.
+ * Phone numbers that must not get WhatsApp or SMS reminders, per channel:
+ * the customer replied with an opt-out keyword (STOP…), the provider said
+ * they opted out, or an admin added the number.
  *
- * Table {prefix}acrfwp_phone_optouts, one row per number and channel
- * (only 'whatsapp' for now; SMS can reuse it):
+ * Table {prefix}acrfwp_phone_optouts, one row per number and channel:
  * - id
  * - phone      E.164 with "+", as PhoneNumber::to_e164() returns it
- * - channel    'whatsapp'
- * - source     'reply' (keyword from the customer) or 'admin'
+ * - channel    'whatsapp' or 'sms'
+ * - source     'reply' (keyword from the customer), 'provider' (the
+ *              provider reported an opt-out) or 'admin'
  * - created_at site time
  */
 class OptOuts {
 
-	const SOURCES = array( 'reply', 'admin' );
+	const CHANNELS = array( 'whatsapp', 'sms' );
+	const SOURCES  = array( 'reply', 'provider', 'admin' );
 
 	public static function table(): string {
 		global $wpdb;
@@ -48,14 +50,14 @@ class OptOuts {
 	}
 
 	/** @return bool True when added (false when already listed or invalid). */
-	public static function add( string $phone, string $source = 'reply', string $channel = 'whatsapp' ): bool {
+	public static function add( string $phone, string $source, string $channel ): bool {
 		global $wpdb;
 
-		if ( ! preg_match( '/^\+\d{8,15}$/', $phone ) ) {
+		if ( ! preg_match( '/^\+\d{8,15}$/', $phone ) || ! in_array( $channel, self::CHANNELS, true ) ) {
 			return false;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- own table; INSERT IGNORE keeps one row per number.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- own table; INSERT IGNORE keeps one row per number and channel.
 		$added = $wpdb->query(
 			$wpdb->prepare(
 				'INSERT IGNORE INTO %i ( phone, channel, source, created_at ) VALUES ( %s, %s, %s, %s )',
@@ -70,7 +72,7 @@ class OptOuts {
 		return (bool) $added;
 	}
 
-	public static function has( string $phone, string $channel = 'whatsapp' ): bool {
+	public static function has( string $phone, string $channel ): bool {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- checked once per send.
@@ -79,11 +81,12 @@ class OptOuts {
 		);
 	}
 
-	public static function get( int $id ): ?array {
+	/** One row of a channel's list, or null. */
+	public static function get( int $id, string $channel ): ?array {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- admin request.
-		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', self::table(), $id ), ARRAY_A );
+		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d AND channel = %s', self::table(), $id, $channel ), ARRAY_A );
 
 		return $row ? self::shape( $row ) : null;
 	}
@@ -95,11 +98,26 @@ class OptOuts {
 		return (bool) $wpdb->delete( self::table(), array( 'id' => $id ), array( '%d' ) );
 	}
 
+	/** The customer opted back in (e.g. replied START). */
+	public static function remove_phone( string $phone, string $channel ): bool {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- webhook.
+		return (bool) $wpdb->delete(
+			self::table(),
+			array(
+				'phone'   => $phone,
+				'channel' => $channel,
+			)
+		);
+	}
+
 	/**
-	 * @param string $search Part of the number.
+	 * @param string $search  Part of the number.
+	 * @param string $channel 'whatsapp' or 'sms'.
 	 * @return array{items: array, total: int}
 	 */
-	public static function page( string $search, int $page, int $per_page ): array {
+	public static function page( string $search, int $page, int $per_page, string $channel ): array {
 		global $wpdb;
 
 		$like   = '%' . $wpdb->esc_like( preg_replace( '/[^\d+]/', '', $search ) ) . '%';
@@ -107,10 +125,10 @@ class OptOuts {
 
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- admin list.
 		$rows  = $wpdb->get_results(
-			$wpdb->prepare( 'SELECT * FROM %i WHERE phone LIKE %s ORDER BY id DESC LIMIT %d OFFSET %d', self::table(), $like, $per_page, $offset ),
+			$wpdb->prepare( 'SELECT * FROM %i WHERE channel = %s AND phone LIKE %s ORDER BY id DESC LIMIT %d OFFSET %d', self::table(), $channel, $like, $per_page, $offset ),
 			ARRAY_A
 		);
-		$total = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE phone LIKE %s', self::table(), $like ) );
+		$total = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE channel = %s AND phone LIKE %s', self::table(), $channel, $like ) );
 		// phpcs:enable
 
 		return array(

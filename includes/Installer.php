@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * also reaches sites without a version bump); the free plugin's tables are
  * owned by the free plugin.
  *
- * Pro tables: {prefix}acrfwp_phone_optouts (App\WhatsApp\OptOuts).
+ * Pro tables: {prefix}acrfwp_phone_optouts (App\Messaging\OptOuts).
  */
 class Installer {
 
@@ -51,7 +51,7 @@ class Installer {
 			return;
 		}
 
-		App\WhatsApp\OptOuts::create_table();
+		App\Messaging\OptOuts::create_table();
 		update_option( self::DB_VERSION_OPTION, self::DB_VERSION, false );
 	}
 

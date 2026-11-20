@@ -5,21 +5,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use ACRFWP\App\Messaging\Secrets;
+
 /**
  * WhatsApp Cloud API connection (Integrations → WhatsApp), stored in the
  * `acrfwp_whatsapp` option (not autoloaded), outside the free plugin's
  * settings so secrets never travel with them.
  *
- * The access token and app secret are encrypted at rest (libsodium secretbox,
- * key derived from the site's AUTH salt) and never returned by the API. If the
- * salts change, they can't be decrypted any more: get() returns '' and the
- * admin enters them again.
+ * The access token and app secret are encrypted at rest (Messaging\Secrets)
+ * and never returned by the API.
  */
 class Settings {
 
 	const OPTION  = 'acrfwp_whatsapp';
 	const SECRETS = array( 'access_token', 'app_secret' );
-	const PREFIX  = 'enc:';
 
 	public static function defaults(): array {
 		return array(
@@ -51,7 +50,7 @@ class Settings {
 		$raw   = self::raw();
 		$value = $raw[ $key ] ?? null;
 
-		return in_array( $key, self::SECRETS, true ) ? self::decrypt( (string) $value ) : $value;
+		return in_array( $key, self::SECRETS, true ) ? Secrets::decrypt( (string) $value ) : $value;
 	}
 
 	/** Ready to send: switched on, with a phone number ID and a token. */
@@ -138,7 +137,7 @@ class Settings {
 				$errors[ $key ] = __( 'This doesn\'t look like a valid value: paste it again without spaces.', 'abandoned-cart-recovery-for-woocommerce-pro' );
 				continue;
 			}
-			$raw[ $key ] = self::encrypt( $value );
+			$raw[ $key ] = Secrets::encrypt( $value );
 		}
 
 		if ( array_key_exists( 'stop_keywords', $input ) ) {
@@ -175,40 +174,5 @@ class Settings {
 		$raw                  = self::raw();
 		$raw['display_phone'] = sanitize_text_field( $phone );
 		update_option( self::OPTION, $raw, false );
-	}
-
-	// -------------------------------------------------------------------------
-	// Encryption
-	// -------------------------------------------------------------------------
-
-	private static function key(): string {
-		return sodium_crypto_generichash( 'acrfwp-whatsapp|' . wp_salt( 'auth' ), '', SODIUM_CRYPTO_SECRETBOX_KEYBYTES );
-	}
-
-	private static function encrypt( string $plain ): string {
-		$nonce = random_bytes( SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
-
-		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- binary ciphertext stored as text.
-		return self::PREFIX . base64_encode( $nonce . sodium_crypto_secretbox( $plain, $nonce, self::key() ) );
-	}
-
-	private static function decrypt( string $stored ): string {
-		if ( '' === $stored || 0 !== strpos( $stored, self::PREFIX ) ) {
-			return '';
-		}
-
-		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- see encrypt().
-		$bytes = base64_decode( substr( $stored, strlen( self::PREFIX ) ), true );
-		if ( false === $bytes || strlen( $bytes ) <= SODIUM_CRYPTO_SECRETBOX_NONCEBYTES ) {
-			return '';
-		}
-
-		$plain = sodium_crypto_secretbox_open(
-			substr( $bytes, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES ),
-			substr( $bytes, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES ),
-			self::key()
-		);
-
-		return false === $plain ? '' : $plain;
 	}
 }

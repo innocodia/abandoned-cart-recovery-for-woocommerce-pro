@@ -1,5 +1,5 @@
 <?php
-namespace ACRFWP\App\WhatsApp;
+namespace ACRFWP\App\Messaging;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

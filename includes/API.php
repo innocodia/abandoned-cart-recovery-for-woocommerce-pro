@@ -22,5 +22,7 @@ class API {
 		API\ProductsReport::init(); // GET /reports/products (+ /export).
 		API\WhatsApp::init();       // /integrations/whatsapp (settings, verify, templates, opt-outs).
 		API\WhatsAppWebhook::init(); // /whatsapp/webhook (Meta: handshake, statuses, STOP).
+		API\Sms::init();            // /integrations/sms (settings, verify, opt-outs).
+		API\SmsWebhook::init();     // /sms/webhook/twilio/{status,inbound} (Twilio).
 	}
 }

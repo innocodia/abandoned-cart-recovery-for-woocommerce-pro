@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ACRFW\App\Messaging\Renderer;
+use ACRFWP\App\Messaging\OptOuts;
+use ACRFWP\App\Messaging\PhoneNumber;
 
 /**
  * Sends WhatsApp follow-up steps through Meta's Cloud API.
@@ -80,7 +82,7 @@ class WhatsAppChannel {
 			if ( acrfw_setting( 'gdpr.enable_whatsapp_optin', false ) && '1' !== (string) ( $cart->whatsapp_optin ?? '' ) ) {
 				return self::skip( 'no_whatsapp_optin' );
 			}
-			if ( OptOuts::has( $to ) ) {
+			if ( OptOuts::has( $to, 'whatsapp' ) ) {
 				return self::skip( 'whatsapp_opted_out' );
 			}
 		}

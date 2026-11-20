@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ACRFW\App\Messaging\MessageLog;
+use ACRFWP\App\Messaging\OptOuts;
 
 /**
  * What Meta posts to /whatsapp/webhook (API\WhatsAppWebhook does the HTTP part).
@@ -115,7 +116,7 @@ class Webhook {
 
 		$phone = '+' . preg_replace( '/\D+/', '', (string) ( $message['from'] ?? '' ) );
 
-		return OptOuts::add( $phone, 'reply' );
+		return OptOuts::add( $phone, 'reply', 'whatsapp' );
 	}
 
 	/** @param string[] $texts Reply texts. */
