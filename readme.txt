@@ -5,8 +5,8 @@ Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.0
-License: GPLv3 or later
-License URI: http://www.gnu.org/licenses/gpl-3.0.txt
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Pro add-on for Better Recovery: follow-up stats, smart conditions, blacklist, products report and more.
 
@@ -53,6 +53,10 @@ A Meta WhatsApp Business account with the Cloud API, a phone number added to it,
 = What do I need for SMS reminders? =
 
 A Twilio account with an SMS-capable phone number (or an approved sender name or Messaging Service). Enter the Account SID, Auth Token and sender under Better Recovery → Integrations → SMS, then paste the inbound URL shown there into your Twilio number's messaging settings so STOP replies reach your store. Sending to US numbers requires A2P 10DLC registration with Twilio. Twilio charges per SMS part.
+
+== Licence and credits ==
+
+Better Recovery Pro is licensed GPLv2 or later. It includes the Freemius WordPress SDK (in `license/`) for licence activation and updates, which is licensed GPLv3; the plugin as a whole is distributed under the GPL terms both allow.
 
 == Changelog ==
 

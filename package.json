@@ -1,6 +1,7 @@
 {
   "name": "abandoned-cart-recovery-for-woocommerce-pro",
   "version": "1.0.0",
+  "license": "GPL-2.0-or-later",
   "private": true,
   "description": "Better Recovery Pro - PHP-only WordPress plugin. npm is used only to package the zip.",
   "scripts": {
