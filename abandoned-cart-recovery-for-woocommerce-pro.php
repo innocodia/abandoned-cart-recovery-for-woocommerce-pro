@@ -3,13 +3,13 @@
  * Plugin Name:       Better Recovery Pro - Abandoned Cart Recovery for WooCommerce
  * Plugin URI:        https://innocodia.com/abandoned-cart-recovery-for-woocommerce
  * Description:       Pro add-on for Better Recovery: follow-up stats, smart conditions, blacklist, products report and more.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            InnoCodia
  * Author URI:        https://innocodia.com
- * License:           GPL-3.0+
- * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       abandoned-cart-recovery-for-woocommerce-pro
  * Domain Path:       /languages/
  * Requires Plugins:  woocommerce, abandoned-cart-recovery-for-woocommerce
@@ -74,6 +74,71 @@ if ( ! function_exists( 'acrfwp_fs' ) ) {
 	acrfwp_fs();
 	// Signal that SDK was initiated.
 	do_action( 'acrfwp_fs_loaded' );
+
+	/*
+	 * Uninstall cleanup (Plugins → Delete). Freemius owns the plugin's
+	 * uninstall hook (it reports the uninstall), so there is no uninstall.php:
+	 * the cleanup runs on Freemius' after_uninstall action instead.
+	 */
+	acrfwp_fs()->add_action( 'after_uninstall', 'acrfwp_fs_uninstall_cleanup' );
+}
+
+if ( ! function_exists( 'acrfwp_fs_uninstall_cleanup' ) ) {
+	/**
+	 * After Pro is deleted: remove Pro's own data on every site — acrfwp_*
+	 * options (WhatsApp connection included) and transients, and the
+	 * acrfwp_phone_optouts table.
+	 *
+	 * Pro keeps most of its data in the free plugin (settings, tables), which
+	 * removes it through its own uninstall when Settings → Advanced → "Delete
+	 * Plugin Data on Uninstall" is on. Pro's own data is removed when that
+	 * switch is on, or when the free plugin's settings are already gone (the
+	 * free plugin was deleted with its data first).
+	 */
+	function acrfwp_fs_uninstall_cleanup() {
+		if ( ! is_multisite() ) {
+			acrfwp_uninstall_site();
+			return;
+		}
+
+		foreach ( get_sites(
+			array(
+				'fields' => 'ids',
+				'number' => 0,
+			)
+		) as $acrfwp_site_id ) {
+			switch_to_blog( (int) $acrfwp_site_id );
+			acrfwp_uninstall_site();
+			restore_current_blog();
+		}
+	}
+}
+
+if ( ! function_exists( 'acrfwp_uninstall_site' ) ) {
+	/** Remove Pro's options on the current site when the free plugin's switch allows it. */
+	function acrfwp_uninstall_site() {
+		global $wpdb;
+
+		$settings = get_option( 'acrfw_settings', null );
+		$delete   = null === $settings || ( is_array( $settings ) && ! empty( $settings['advanced']['delete_plugin_data'] ) );
+		if ( ! $delete ) {
+			return;
+		}
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- uninstall removes Pro's own data.
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s',
+				$wpdb->options,
+				'acrfwp\_%',
+				'\_transient\_acrfwp\_%',
+				'\_transient\_timeout\_acrfwp\_%'
+			)
+		);
+		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . 'acrfwp_phone_optouts' ) );
+		// phpcs:enable
+		wp_cache_flush();
+	}
 }
 
 /**
@@ -92,7 +157,7 @@ if ( ! function_exists( 'acrfwp_fs' ) ) {
 final class ACRFWP {
 
 	/** Oldest free plugin version this Pro build works with. */
-	const MIN_FREE_VERSION = '1.0.0';
+	const MIN_FREE_VERSION = '1.0.2';
 
 	private function __construct() {
 		$this->define_constants();
@@ -123,7 +188,7 @@ final class ACRFWP {
 	 * Define all plugin-wide constants.
 	 */
 	public function define_constants(): void {
-		define( 'ACRFWP_VERSION', '1.0.0' );
+		define( 'ACRFWP_VERSION', '1.0.1' );
 		define( 'ACRFWP_PLUGIN_FILE', __FILE__ );
 		define( 'ACRFWP_PLUGIN_SLUG', 'acrfwp' );
 		define( 'ACRFWP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

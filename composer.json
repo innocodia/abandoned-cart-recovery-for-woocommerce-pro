@@ -2,7 +2,7 @@
   "name": "innocodia/abandoned-cart-recovery-for-woocommerce-pro",
   "description": "Better Recovery Pro - Abandoned Cart Recovery for WooCommerce",
   "type": "wordpress-plugin",
-  "license": "GPL-3.0-or-later",
+  "license": "GPL-2.0-or-later",
   "autoload": {
     "psr-4": {
       "ACRFWP\\": "includes/"
