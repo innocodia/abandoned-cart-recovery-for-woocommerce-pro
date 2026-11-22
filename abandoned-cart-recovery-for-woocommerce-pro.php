@@ -3,7 +3,7 @@
  * Plugin Name:       Better Recovery Pro - Abandoned Cart Recovery for WooCommerce
  * Plugin URI:        https://innocodia.com/abandoned-cart-recovery-for-woocommerce
  * Description:       Pro add-on for Better Recovery: follow-up stats, smart conditions, blacklist, products report and more.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            InnoCodia
@@ -157,7 +157,7 @@ if ( ! function_exists( 'acrfwp_uninstall_site' ) ) {
 final class ACRFWP {
 
 	/** Oldest free plugin version this Pro build works with. */
-	const MIN_FREE_VERSION = '1.0.0';
+	const MIN_FREE_VERSION = '1.0.2';
 
 	private function __construct() {
 		$this->define_constants();
@@ -188,7 +188,7 @@ final class ACRFWP {
 	 * Define all plugin-wide constants.
 	 */
 	public function define_constants(): void {
-		define( 'ACRFWP_VERSION', '1.0.0' );
+		define( 'ACRFWP_VERSION', '1.0.1' );
 		define( 'ACRFWP_PLUGIN_FILE', __FILE__ );
 		define( 'ACRFWP_PLUGIN_SLUG', 'acrfwp' );
 		define( 'ACRFWP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

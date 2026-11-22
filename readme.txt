@@ -4,7 +4,7 @@ Tags: abandoned cart, cart recovery, woocommerce, follow-up emails, conversion
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,10 +60,13 @@ Better Recovery Pro is licensed GPLv2 or later. It includes the Freemius WordPre
 
 == Changelog ==
 
-= Unreleased =
+= 1.0.1 – 2026-11-22 =
 * New: WhatsApp reminders through Meta's WhatsApp Cloud API: connection settings with verification, approved-template picker, merge tags in template slots and the link button, delivered / read / failed status, and a STOP list.
 * New: SMS reminders through Twilio: connection settings with verification, short recovery links, an automatic opt-out line, delivery reports, and STOP / START handling.
 * New: Optional WhatsApp and SMS opt-in checkboxes at checkout (classic and block checkout).
+* Improvement: Plugin data is removed through the licensing system's uninstall step instead of a separate uninstall file, including the WhatsApp / SMS settings and STOP lists (only when "Delete Plugin Data on Uninstall" is on).
+* Tweak: License changed to GPLv2 or later, the same as WordPress.
+* Tweak: Requires Better Recovery (free) 1.0.2 or newer.
 
 = 1.0.0 – 2026-11-13 =
 * New: Initial release.
